@@ -8,37 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var isNight = false
+    
     var body: some View {
         //ZStack is layers, just 10 views
         ZStack {
-            //Background + edges Color(.blue) just blue or
-            //Gradient colors: [.blue, .red, .white]
-            LinearGradient(gradient: Gradient(colors: [.blue, Color("lightBlue")]),
-                           startPoint: .topLeading,
-                           endPoint: .bottomTrailing)
-            // to get to the edges
-                .edgesIgnoringSafeArea(.all)
-            
-            // vstack - vertical stack
+            BackgroundView( isNight: $isNight)
             VStack{
-                Text("Cuppertino, CA")
-                    .font(.system(size: 32, weight: .medium, design: .default))
-                    .foregroundColor(.white)
-                    .padding()//around the text .bottom or 100
-                //.frame(width: 200, height: 200)
-                //.background(Color.red)
-                VStack(spacing: 10){
-                    Image(systemName: "cloud.sun.fill")// cmd+Shift+C to copy the string
-                        .renderingMode(.original)//for roiginal color
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)//fi fill in the square - fill equaly
-                        .frame(width: 180, height: 180)
-                    
-                    Text("76°")
-                        .font(.system(size: 70, weight: .medium, design: .rounded))
-                        .foregroundColor(.white)
-                }
-                .padding(.bottom, 40)
+                CityTextView(cityName: "Cuoertino, CA")
+                
+                MainWeatherStatusView(imageName: isNight ? "cloud.moon.fill" : "cloud.sun.fill", temperature: 75)
+                // vstack - vertical stack
+                
                 //Spacer() // pushes all the elements down
                 
                 //days in h stack
@@ -65,15 +47,12 @@ struct ContentView: View {
                 //Add Button{}label: {}
                 Button{
                     //action
-                    print("Button tapped")
+                    isNight.toggle()
                     
                 }label: {
-                    Text("Change day time")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundColor(.blue)//font color
-                        .frame(width: 280, height: 50)
-                        .background(Color.white) //frame color
-                        .cornerRadius(10)
+                    WeatherButton(title: "Change day time",
+                                  textColor: isNight ? .black : .blue,
+                                  backgroundColor: isNight ? .gray : .white)
                 }
                 Spacer()//
             }
@@ -116,3 +95,55 @@ struct WeatherDayView: View {
         }
     }
 }
+
+struct BackgroundView: View {
+    //var to pass in
+    @Binding var isNight: Bool
+    
+    var body: some View {
+        
+        //Background + edges Color(.blue) just blue or
+        //Gradient colors: [.blue, .red, .white]
+        LinearGradient(gradient: Gradient(colors: [isNight ? .black : .blue, isNight ? .gray : Color("lightBlue")]),
+                       startPoint: .topLeading,
+                       endPoint: .bottomTrailing)
+        // to get to the edges
+            .edgesIgnoringSafeArea(.all)
+    }
+}
+
+struct CityTextView: View{
+    var cityName: String
+    var body: some View {
+        Text(cityName)
+            .font(.system(size: 32, weight: .medium, design: .default))
+            .foregroundColor(.white)
+            .padding()//around the text .bottom or 100
+        //.frame(width: 200, height: 200)
+        //.background(Color.red)
+    }
+}
+
+struct MainWeatherStatusView: View {
+    
+    var imageName: String
+    var temperature: Int
+    
+    var body: some View {
+        
+        VStack(spacing: 10){
+            Image(systemName: imageName)// cmd+Shift+C to copy the string
+                .renderingMode(.original)//for roiginal color
+                .resizable()
+                .aspectRatio(contentMode: .fit)//fi fill in the square - fill equaly
+                .frame(width: 180, height: 180)
+            
+            Text("\(temperature)°")
+                .font(.system(size: 70, weight: .medium, design: .rounded))
+                .foregroundColor(.white)
+        }
+        .padding(.bottom, 40)
+    }
+}
+
+
